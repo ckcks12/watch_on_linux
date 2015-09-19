@@ -11,9 +11,7 @@ It will prevent your cpu from high CPU usage and CPU overheating. I'm not sure o
 ###3. Writing file size limit
 To avoid creating data It restricts the data size able to be written. I'm really love it. I know you do too.
 
-:(..... 
-WAHHHHHHHH !
-Somebody give me some attention... ;(
-
-Okay.. . . ... .. ;(
-I'm gonna do away with me. bbbbbbbbbbbbbye
+...
+I'm feeling blue tonight.
+~~I'm gonna do away with me.~~
+♬ I am firefly ~~~ 
