@@ -11,35 +11,64 @@
 #include <errno.h>
 #include <string.h>
 
+const char *src_path = "/source.c";
+const char *exe_path = "/a.out";
+const char *stdin_path = "/in";
+const char *stdout_path = "/out";
+const char *stderr_path = "/err";
+const char *compile_cmd = "gcc";
+
+size_t get_file_size(const char *path)
+{
+	FILE *fp;
+	size_t size;
+
+	fp = fopen(path, "r");
+	if (fp)
+	{
+		fseek(fp, 0L, SEEK_END);
+		size = ftell(fp);
+		fclose(fp);
+		return size;		
+	}
+	
+	return -1; //failed
+}
+
+int compile()
+{
+	int pid;
+
+	pid=fork();
+	if (pid==0)
+	{
+		freopen(stdout_path, "w", stderr);
+		execlp(compile_cmd, compile_cmd, src_path, "-o", exe_path, NULL);
+		printf("execlp error\n");
+	}
+	else
+	{
+		waitpid(pid, 0, 0);
+		if (get_file_size(stdout_path))
+		{
+			exit(0); 
+		}
+	}
+}
+
 void init_syscall_limit()
 {
 	//empty
 }
 
-int file_exist(const char* path)
-{
-	FILE *file;
-	if (file = fopen(path, "r"))
-	{
-		fclose(file);
-		return 1;
-	}
-	return 0;
-}
-
 void run_solution() 
 {
-	const char *exe_name = "./a.out";
-	const char *stdin_name = "in";
-	const char *stdout_name = "out";
-	const char *stderr_name = "err";
-
-	freopen(stdin_name, "r", stdin);
-	freopen(stdout_name, "w", stdout);
-	freopen(stderr_name, "a+", stderr);
+	freopen(stdin_path, "r", stdin);
+	freopen(stdout_path, "w", stdout);
+	freopen(stderr_path, "a+", stderr);
 	
 	ptrace(PTRACE_TRACEME, 0, NULL, NULL);
-	execl(exe_name, exe_name, (char *)NULL);
+	execl(exe_path, exe_path, (char *)NULL);
 
 	exit(0);
 }
@@ -56,6 +85,7 @@ void watch_solution(int pid)
 	struct rlimit file_limit;	
 	struct rlimit cpu_limit;
 	struct rlimit old_limit;	
+	int p;
 
 	//elapsed time check
 	s_limit = 10;
@@ -63,7 +93,7 @@ void watch_solution(int pid)
 	s_start = spec.tv_sec;
 	
 	//file limit
-	file_limit.rlim_cur = 5 * 1024;
+	file_limit.rlim_cur = 1 * 1024 * 1024;
 	file_limit.rlim_max = file_limit.rlim_cur;
 	prlimit(pid, RLIMIT_FSIZE, &file_limit, &old_limit);
 
@@ -74,7 +104,7 @@ void watch_solution(int pid)
 
 	do
 	{
-		ptrace(PTRACE_GETREGS, pid, NULL, &reg);
+		p = (int)ptrace(PTRACE_GETREGS, pid, NULL, &reg);
 		
 		w = waitpid(pid, &status, 0);
 		if (w==-1)
@@ -90,6 +120,7 @@ void watch_solution(int pid)
 		{
 			ptrace(PTRACE_KILL, pid, NULL, NULL);
 		}		
+		//printf("s_start=%lld\t\ts_now=%lld\n", (long long)s_start, (long long)s_now); 		
 
 		ptrace(PTRACE_SYSCALL, pid, NULL, NULL);
 	} while (!WIFEXITED(status) && !WIFSIGNALED(status));
@@ -100,6 +131,7 @@ int main()
 {
 	int pid;
 
+	compile();
 	init_syscall_limit();
 	pid = fork();
 	if (pid == 0)
