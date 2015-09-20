@@ -1,12 +1,11 @@
 #!/bin/bash
 
-con="watcher2"
-src="/source.c"
-out="/out"
+source watch_setting.sh
 
-rm -f $out
-docker stop $con
+con=$con$1
+
+rm -f $out$i
 docker start $con
-docker cp $src $con:/source.c
+docker cp $src$i $con:/source.c
 docker exec $con /bin/bash -c "rm -f /out /a.out && /watch"
 docker cp $con:/out $out
