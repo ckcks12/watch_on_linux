@@ -19,4 +19,3 @@ Just save your source as `source.c` and execute this shell script then see the f
 Of course you can change the name of source, output file and also container.
 
 <img src="https://pbs.twimg.com/profile_images/476169263305457665/I8QlqUVh.jpeg" width=100 height=100>
-It is made by fu@cking tiny university student—that's me. WTF!
