@@ -11,11 +11,11 @@
 #include <errno.h>
 #include <string.h>
 
-const char *src_path = "src.c";
-const char *exe_path = "a.out";
-const char *stdin_path = "in";
-const char *stdout_path = "out";
-const char *stderr_path = "err";
+const char *src_path = "./src.c";
+const char *exe_path = "./a.out";
+const char *stdin_path = "./in";
+const char *stdout_path = "./out";
+const char *stderr_path = "./err";
 const char *compile_cmd = "gcc";
 
 size_t get_file_size(const char *path)
