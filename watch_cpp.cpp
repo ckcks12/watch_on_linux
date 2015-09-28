@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <string.h>
 
-const char *src_path = "./src.cpp";
+char src_path[2560]; //will get from parameter
 const char *exe_path = "./a.out";
 const char *stdin_path = "./in";
 const char *stdout_path = "./out";
@@ -127,9 +127,28 @@ void watch_solution(int pid)
 	exit(EXIT_SUCCESS);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
 	int pid;
+	int i;
+
+	//check source file name is passed
+	if( argc <= 1)
+	{
+		//no file to compile
+		return 0;
+	}
+	else
+	{
+		i = 1;
+		src_path[0] = 0; //for strcat
+		while( argv[i] != null)
+		{
+			strcat( src_path, " ./"); //every source must be in ./
+			strcat( src_path, argv[i] );
+			i++;
+		} 
+	}
 
 	compile();
 	init_syscall_limit();
