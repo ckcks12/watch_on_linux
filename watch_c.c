@@ -11,7 +11,7 @@
 #include <errno.h>
 #include <string.h>
 
-char src_path[2560]; //will get from parameter
+char * exec_argv[256];
 const char *exe_path = "./a.out";
 const char *stdin_path = "./in";
 const char *stdout_path = "./out";
@@ -43,8 +43,8 @@ int compile()
 	if (pid==0)
 	{
 		freopen(stdout_path, "w", stderr);
-		execlp(compile_cmd, compile_cmd, src_path, "-o", exe_path, NULL);
-		printf("execlp error\n");
+		execvp(compile_cmd, (char**)exec_argv);
+		printf("execvp error\n");
 	}
 	else
 	{
@@ -141,13 +141,18 @@ int main(int argc, char* argv[])
 	else
 	{
 		i = 1;
-		src_path[0] = 0; //for strcat
-		while( argv[i] != null)
+		while( argv[i] != NULL)
 		{
-			strcat( src_path, " ./"); //every source must be in ./
-			strcat( src_path, argv[i] );
+			exec_argv[i] = argv[i];	
 			i++;
-		} 
+		}
+		
+		exec_argv[0] = (char*)malloc(strlen(compile_cmd)+1);
+		strcpy(exec_argv[0], compile_cmd);
+		exec_argv[i++] = "-o";
+		exec_argv[i] = (char*)malloc(strlen(exe_path)+1);
+		strcpy(exec_argv[i++], exe_path);
+		exec_argv[i] = NULL;
 	}
 
 	compile();
